@@ -9,18 +9,16 @@ from database import Base, engine
 class File(Base):
     __tablename__ = "files"
     id = Column(Integer, primary_key = True)
-    file_name = Column(String(250), nullable = False)
+    filename = Column(String(250), nullable = False)
     song = relationship("Song", uselist = False, backref = "storage")
     
     def as_dictionary(self):
         file_dict = {
             "id": self.id,
-            "file_name": self.file_name
-            }
+            "name": self.filename,
+            "path": url_for("uploaded_file", filename=self.filename)
+        }
         return file_dict
-    
-    
-    
     
 class Song(Base):
     
@@ -30,7 +28,12 @@ class Song(Base):
     def as_dictionary(self):
         song = {
             "id": self.id,
-            "file": self.storage.as_dictionary()
+            "file": {
+                "id": self.storage.id,
+                "name": self.storage.filename,
+                "path": url_for("uploaded_file", filename=self.storage.filename)
+                
+            }
             }
         return song
     
